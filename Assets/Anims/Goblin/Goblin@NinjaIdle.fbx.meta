@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 6862f3f33bc31ef4cbc356bdd4f5049c
+guid: 886d24bd81d3976458e8ba44b23490bb
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects: {}
   materials:
-    materialImportMode: 1
+    materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 0
+    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -31,7 +31,36 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: ninja idle
+      takeName: mixamo.com
+      internalID: -203655887218126122
+      firstFrame: 0
+      lastFrame: 200
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 0
   meshes:
     lODScreenPercentages: []
@@ -77,23 +106,7 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
-  referencedClips:
-  - 1d2952bad53947249bf56a4797de8c4e
-  - b08a44298343f76458484e3eb8499593
-  - 160f261c9a476e64390f76bb8580a2c9
-  - 83875f10389b7c946afa8ae35ec36f3e
-  - 5ec58feb0c31c5242a6a0671057b4452
-  - 1c8d938da07f2a44d8cbe743c5149df8
-  - f4dabc9d3f9fd4f45b9fc4ced7b2904d
-  - 0c00ae91f9e5b694ca4c44b9247ab5cf
-  - a50fb5ed719c96e48822eb0bc14f5dbc
-  - 69f0588248fe5aa4fb57eb67611cc2db
-  - 886d24bd81d3976458e8ba44b23490bb
-  - ad2fb4f2ad0274a4888089a2a3c45695
-  - 0e54cc666bfa83d448ef0c5dd09e67f2
-  - 3fee78bdc675f3548bbbc3ea6fd32569
-  - 147f2791dcaa48c45b79a28d581327ef
-  - 85cdeca597826024081ca4eba9d670e0
+  referencedClips: []
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
