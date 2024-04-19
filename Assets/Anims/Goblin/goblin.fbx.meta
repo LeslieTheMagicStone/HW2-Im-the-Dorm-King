@@ -5,10 +5,10 @@ ModelImporter:
   internalIDToNameTable: []
   externalObjects: {}
   materials:
-    materialImportMode: 2
+    materialImportMode: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -83,6 +83,8 @@ ModelImporter:
   - 160f261c9a476e64390f76bb8580a2c9
   - 83875f10389b7c946afa8ae35ec36f3e
   - 5ec58feb0c31c5242a6a0671057b4452
+  - b449c8eec6ea9d74a9856332bfa28769
+  - 077f74df26d27b244834c472b70a0df4
   - 0c00ae91f9e5b694ca4c44b9247ab5cf
   - 8b9886c9181795645b2e57feda070ad7
   - 0e54cc666bfa83d448ef0c5dd09e67f2

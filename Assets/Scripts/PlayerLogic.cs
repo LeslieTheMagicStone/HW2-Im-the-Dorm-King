@@ -14,6 +14,7 @@ public class PlayerLogic : MonoBehaviour
     int jumpCount;
 
     CharacterController characterController;
+    Animator animator;
     Vector3 movement;
     Vector3 velocity;
 
@@ -27,6 +28,7 @@ public class PlayerLogic : MonoBehaviour
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
 
         jumpCount = MAX_JUMP_COUNT;
     }
@@ -36,12 +38,16 @@ public class PlayerLogic : MonoBehaviour
         horizontalInput = Input.GetAxis("Horizontal" + playerId.ToString());
         verticalInput = Input.GetAxis("Vertical" + playerId.ToString());
 
+        animator.SetFloat("HorizontalInput", horizontalInput);
+
         if (characterController.isGrounded) jumpCount = MAX_JUMP_COUNT;
+        animator.SetBool("IsGrounded", characterController.isGrounded);
 
         if (Input.GetButtonDown("Jump" + playerId.ToString()) && jumpCount > 0)
         {
             jumpCount--;
             velocity.y = JUMP_SPEED;
+            animator.SetTrigger("Jump");
         }
     }
 
