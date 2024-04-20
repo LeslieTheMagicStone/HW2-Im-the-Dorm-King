@@ -14,9 +14,9 @@ public class DamageTextLogic : MonoBehaviour
 
     public void SetMaster(PlayerLogic master)
     {
-        if(master) master.OnHurt.RemoveListener(UpdateText);
+        if(master) master.OnDamaged.RemoveListener(UpdateText);
         this.master = master;
-        master.OnHurt.AddListener(UpdateText);
+        master.OnDamaged.AddListener(UpdateText);
         var portrait = GetComponentInChildren<RawImage>();
         portrait.texture = master.portrait;
     }

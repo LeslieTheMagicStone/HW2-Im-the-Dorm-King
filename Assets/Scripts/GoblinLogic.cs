@@ -8,7 +8,7 @@ public class GoblinLogic : PlayerLogic
     protected override void Update()
     {
         base.Update();
-        if (!isControllable) return;
+        if (!isControllable || isBusy) return;
         HandleMovement();
         HandleAttack();
     }

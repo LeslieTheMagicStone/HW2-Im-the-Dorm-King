@@ -1,6 +1,4 @@
 using System.Collections;
-using Microsoft.Unity.VisualStudio.Editor;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,7 +14,7 @@ public class PlayerLogic : MonoBehaviour
     public bool isBusy;
     public bool isControllable => uncontrollableTime <= 0f;
     public PlayerId playerId;
-    public UnityEvent<float> OnHurt;
+    public UnityEvent<float> OnDamaged;
     public Texture portrait;
 
     protected float horizontalInput;
@@ -42,8 +40,8 @@ public class PlayerLogic : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
-        isMovable = true;
-        horizontalFacing = 1;
+        SetMovable(true);
+        horizontalFacing = transform.rotation.eulerAngles.y == 90 ? 1 : -1;
         uncontrollableTime = 0f;
         jumpCount = MAX_JUMP_COUNT;
     }
@@ -55,9 +53,13 @@ public class PlayerLogic : MonoBehaviour
         if (uncontrollableTime > 0)
             uncontrollableTime -= Time.deltaTime;
         else uncontrollableTime = 0;
-        animator.SetFloat("UncontrollableTime", uncontrollableTime);
 
         animator.SetBool("IsBusy", isBusy);
+
+        if (characterController.isGrounded && !isMovable && isControllable && !isBusy)
+            SetMovable(true);
+
+        animator.SetBool("IsMovable", isMovable);
     }
 
     protected void HandleMovement()
@@ -86,7 +88,6 @@ public class PlayerLogic : MonoBehaviour
     {
         if (isMovable && isControllable)
             velocity.x = horizontalInput * SPEED;
-        else velocity.x = 0;
 
         movement = velocity * Time.fixedDeltaTime;
 
@@ -100,10 +101,10 @@ public class PlayerLogic : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out FireballLogic fireballLogic))
+        if (other.TryGetComponent(out Damage damage))
         {
-            if (fireballLogic.playerId != playerId)
-                GetHurt(10.0f, 0.3f);
+            if (damage.playerId != playerId)
+                GetHurt(damage.damage, damage.stiffTime, damage.knockback);
         }
     }
 
@@ -112,32 +113,43 @@ public class PlayerLogic : MonoBehaviour
         animator.ResetTrigger("Turn");
     }
 
-    private void GetHurt(float damage, float stiffTime)
+    private void GetHurt(float damage, float stiffTime, Vector3 knockback)
     {
         TakeDamage(damage);
-        SetUncontrollableTime(stiffTime);
-        animator.SetTrigger("Hurt");
-        OnHurt.Invoke(totalDamge);
+        SetUncontrollable(stiffTime);
+        TakeKnockback(knockback);
     }
 
     private void TakeDamage(float damage)
     {
         totalDamge += damage;
+        OnDamaged.Invoke(totalDamge);
     }
 
-    private void SetUncontrollableTime(float value)
+    private void SetUncontrollable(float time)
     {
-        uncontrollableTime += value;
+        if (time == 0) return;
+        uncontrollableTime += time;
+        SetMovable(false);
+        animator.SetTrigger("Hurt");
+    }
+
+    private void TakeKnockback(Vector3 knockback)
+    {
+        float knockbackFactor = 1 + totalDamge / 100f;
+        velocity = knockbackFactor * knockback;
     }
 
     public void SetMovable(bool value)
     {
         isMovable = value;
+        if (!value) velocity.x = 0;
     }
 
     public void SetBusy(bool value)
     {
         isBusy = value;
+        SetMovable(!value);
     }
 
     public void Turn() { StartCoroutine(TurnCoroutine()); }
@@ -148,7 +160,7 @@ public class PlayerLogic : MonoBehaviour
 
         float timer = TURN_TIME;
         Vector3 rotation = new(0, 180, 0);
-        var targetRotation = quaternion.Euler(rotation * Mathf.Deg2Rad) * transform.rotation;
+        var targetRotation = Quaternion.Euler(rotation) * transform.rotation;
         while (timer > 0)
         {
             transform.Rotate(rotation * Time.deltaTime / TURN_TIME);
