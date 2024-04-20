@@ -4,6 +4,7 @@ public class FireballLogic : Damage
 {
     Rigidbody rb;
     const float SPEED = 4f;
+    [SerializeField] private GameObject boomPrefab;
 
     private void Start()
     {
@@ -22,7 +23,13 @@ public class FireballLogic : Damage
         if (other.TryGetComponent(out PlayerLogic playerLogic))
         {
             if (playerLogic.playerId != playerId)
-                Destroy(gameObject);
+                Boom();
         }
+    }
+
+    private void Boom()
+    {
+        Instantiate(boomPrefab, transform.position, transform.rotation);
+        Destroy(gameObject);
     }
 }
