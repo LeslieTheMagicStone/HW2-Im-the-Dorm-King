@@ -12,11 +12,13 @@ public class PlayerLogic : MonoBehaviour
 {
     public bool isMovable;
     public bool isBusy;
+    public bool isControllable => uncontrollableTime <= 0f;
 
     protected float horizontalInput;
     protected float verticalInput;
     protected int horizontalFacing;
-
+    protected float totalDamge;
+    protected float uncontrollableTime;
     protected int jumpCount;
 
     protected CharacterController characterController;
@@ -32,14 +34,23 @@ public class PlayerLogic : MonoBehaviour
     protected const int MAX_JUMP_COUNT = 2;
     protected const float TURN_TIME = 0.2f;
 
-    private void Start()
+    protected virtual void Start()
     {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
         isMovable = true;
         horizontalFacing = 1;
+        uncontrollableTime = 0f;
         jumpCount = MAX_JUMP_COUNT;
+    }
+
+    protected virtual void Update()
+    {
+        if (uncontrollableTime > 0)
+            uncontrollableTime -= Time.deltaTime;
+        else uncontrollableTime = 0;
+        animator.SetFloat("UncontrollableTime", uncontrollableTime);
     }
 
     protected void HandleMovement()
@@ -61,9 +72,9 @@ public class PlayerLogic : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
-        if (isMovable)
+        if (isMovable && isControllable)
         {
             velocity.x = horizontalInput * SPEED;
             if (horizontalFacing * horizontalInput < 0 && !isBusy)
@@ -83,6 +94,32 @@ public class PlayerLogic : MonoBehaviour
             velocity.y -= GRAVITY * Time.fixedDeltaTime;
         else
             velocity.y = -GRAVITY * Time.fixedDeltaTime;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.TryGetComponent(out FireballLogic fireballLogic))
+        {
+            if (fireballLogic.playerId != playerId)
+                GetHurt(10.0f, 0.3f);
+        }
+    }
+
+    private void GetHurt(float damage, float stiffTime)
+    {
+        TakeDamage(damage);
+        SetUncontrollableTime(stiffTime);
+        animator.SetTrigger("Hurt");
+    }
+
+    private void TakeDamage(float damage)
+    {
+        totalDamge += damage;
+    }
+
+    private void SetUncontrollableTime(float value)
+    {
+        uncontrollableTime += value;
     }
 
     public void SetMovable(bool value)
@@ -108,4 +145,5 @@ public class PlayerLogic : MonoBehaviour
         }
         transform.rotation = targetRotation;
     }
+
 }

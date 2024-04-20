@@ -4,7 +4,7 @@ public class FireballLogic : MonoBehaviour
 {
     public PlayerId playerId;
     Rigidbody rb;
-    const float SPEED = 2f;
+    const float SPEED = 4f;
 
     private void Start()
     {
