@@ -1,6 +1,8 @@
 using System.Collections;
+using Microsoft.Unity.VisualStudio.Editor;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum PlayerId
 {
@@ -13,6 +15,9 @@ public class PlayerLogic : MonoBehaviour
     public bool isMovable;
     public bool isBusy;
     public bool isControllable => uncontrollableTime <= 0f;
+    public PlayerId playerId;
+    public UnityEvent<float> OnHurt;
+    public Texture portrait;
 
     protected float horizontalInput;
     protected float verticalInput;
@@ -25,8 +30,6 @@ public class PlayerLogic : MonoBehaviour
     protected Animator animator;
     protected Vector3 movement;
     protected Vector3 velocity;
-
-    [SerializeField] protected PlayerId playerId;
 
     protected const float SPEED = 3f;
     protected const float GRAVITY = 30f;
@@ -47,10 +50,14 @@ public class PlayerLogic : MonoBehaviour
 
     protected virtual void Update()
     {
+        ResetAnimatorTriggers();
+
         if (uncontrollableTime > 0)
             uncontrollableTime -= Time.deltaTime;
         else uncontrollableTime = 0;
         animator.SetFloat("UncontrollableTime", uncontrollableTime);
+
+        animator.SetBool("IsBusy", isBusy);
     }
 
     protected void HandleMovement()
@@ -64,26 +71,21 @@ public class PlayerLogic : MonoBehaviour
         if (characterController.isGrounded) jumpCount = MAX_JUMP_COUNT;
         animator.SetBool("IsGrounded", characterController.isGrounded);
 
-        if (Input.GetButtonDown("Jump" + playerId.ToString()) && jumpCount > 0)
+        if (Input.GetButtonDown("Jump" + playerId.ToString()) && jumpCount > 0 && !isBusy)
         {
             jumpCount--;
             velocity.y = JUMP_SPEED;
             animator.SetTrigger("Jump");
         }
+
+        if (horizontalFacing * horizontalInput < 0 && !isBusy)
+            animator.SetTrigger("Turn");
     }
 
     protected virtual void FixedUpdate()
     {
         if (isMovable && isControllable)
-        {
             velocity.x = horizontalInput * SPEED;
-            if (horizontalFacing * horizontalInput < 0 && !isBusy)
-            {
-                horizontalFacing *= -1;
-                animator.SetTrigger("Turn");
-                StartCoroutine(TurnCoroutine());
-            }
-        }
         else velocity.x = 0;
 
         movement = velocity * Time.fixedDeltaTime;
@@ -105,11 +107,17 @@ public class PlayerLogic : MonoBehaviour
         }
     }
 
+    private void ResetAnimatorTriggers()
+    {
+        animator.ResetTrigger("Turn");
+    }
+
     private void GetHurt(float damage, float stiffTime)
     {
         TakeDamage(damage);
         SetUncontrollableTime(stiffTime);
         animator.SetTrigger("Hurt");
+        OnHurt.Invoke(totalDamge);
     }
 
     private void TakeDamage(float damage)
@@ -132,8 +140,12 @@ public class PlayerLogic : MonoBehaviour
         isBusy = value;
     }
 
-    public IEnumerator TurnCoroutine()
+    public void Turn() { StartCoroutine(TurnCoroutine()); }
+
+    private IEnumerator TurnCoroutine()
     {
+        horizontalFacing *= -1;
+
         float timer = TURN_TIME;
         Vector3 rotation = new(0, 180, 0);
         var targetRotation = quaternion.Euler(rotation * Mathf.Deg2Rad) * transform.rotation;
