@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,6 +123,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &75231339
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 75231340}
+  m_Layer: 0
+  m_Name: Fireball Spawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 7174288486110832750, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &75231340
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 75231339}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0, y: 1.03, z: 0.96}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 305252380}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &305252375
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -139,7 +170,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 6862f3f33bc31ef4cbc356bdd4f5049c,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.596
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6862f3f33bc31ef4cbc356bdd4f5049c,
         type: 3}
@@ -188,7 +219,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6862f3f33bc31ef4cbc356bdd4f5049c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 75231340}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6862f3f33bc31ef4cbc356bdd4f5049c,
         type: 3}
@@ -201,7 +236,7 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6862f3f33bc31ef4cbc356bdd4f5049c,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 305252377}
+      addedObject: {fileID: 305252381}
   m_SourcePrefab: {fileID: 100100000, guid: 6862f3f33bc31ef4cbc356bdd4f5049c, type: 3}
 --- !u!1 &305252376 stripped
 GameObject:
@@ -209,19 +244,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 305252375}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &305252377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 305252376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0aa603b7c801aa2499664a33fb6e78fe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerId: 0
 --- !u!143 &305252378
 CharacterController:
   m_ObjectHideFlags: 0
@@ -269,6 +291,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &305252380 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6862f3f33bc31ef4cbc356bdd4f5049c,
+    type: 3}
+  m_PrefabInstance: {fileID: 305252375}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &305252381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305252376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0ff594923a86f54b802a131ad9297fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isMovable: 0
+  playerId: 0
+  fireballPrefab: {fileID: 2049386367869289608, guid: 1f8000e50e14f4d45ae1c2d651d7b56c,
+    type: 3}
+  fireballSpawnPoint: {fileID: 75231340}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

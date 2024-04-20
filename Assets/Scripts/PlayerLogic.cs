@@ -8,33 +8,37 @@ public enum PlayerId
 
 public class PlayerLogic : MonoBehaviour
 {
-    float horizontalInput;
-    float verticalInput;
+    public bool isMovable;
 
-    int jumpCount;
+    protected float horizontalInput;
+    protected float verticalInput;
 
-    CharacterController characterController;
-    Animator animator;
-    Vector3 movement;
-    Vector3 velocity;
+    protected int jumpCount;
 
-    [SerializeField] PlayerId playerId;
+    protected CharacterController characterController;
+    protected Animator animator;
+    protected Vector3 movement;
+    protected Vector3 velocity;
 
-    const float SPEED = 3f;
-    const float GRAVITY = 30f;
-    const float JUMP_SPEED = 12f;
-    const int MAX_JUMP_COUNT = 2;
+    [SerializeField] protected PlayerId playerId;
+
+    protected const float SPEED = 3f;
+    protected const float GRAVITY = 30f;
+    protected const float JUMP_SPEED = 12f;
+    protected const int MAX_JUMP_COUNT = 2;
 
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
 
+        isMovable = true;
         jumpCount = MAX_JUMP_COUNT;
     }
 
-    private void Update()
+    protected void HandleMovement()
     {
+        // Handle movement.
         horizontalInput = Input.GetAxis("Horizontal" + playerId.ToString());
         verticalInput = Input.GetAxis("Vertical" + playerId.ToString());
 
@@ -53,7 +57,9 @@ public class PlayerLogic : MonoBehaviour
 
     private void FixedUpdate()
     {
-        velocity.x = horizontalInput * SPEED;
+        if (isMovable)
+            velocity.x = horizontalInput * SPEED;
+        else velocity.x = 0;
 
         movement = velocity * Time.fixedDeltaTime;
 
@@ -63,5 +69,10 @@ public class PlayerLogic : MonoBehaviour
             velocity.y -= GRAVITY * Time.fixedDeltaTime;
         else
             velocity.y = -GRAVITY * Time.fixedDeltaTime;
+    }
+
+    public void SetMovable(bool value)
+    {
+        isMovable = value;
     }
 }
