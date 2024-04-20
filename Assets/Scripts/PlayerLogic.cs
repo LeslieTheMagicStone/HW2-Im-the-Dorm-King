@@ -82,6 +82,8 @@ public class PlayerLogic : MonoBehaviour
 
         if (horizontalFacing * horizontalInput < 0 && !isBusy)
             animator.SetTrigger("Turn");
+
+        animator.SetFloat("ForwardInput", horizontalInput * horizontalFacing);
     }
 
     protected virtual void FixedUpdate()
