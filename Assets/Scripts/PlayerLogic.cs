@@ -1,3 +1,5 @@
+using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public enum PlayerId
@@ -9,9 +11,11 @@ public enum PlayerId
 public class PlayerLogic : MonoBehaviour
 {
     public bool isMovable;
+    public bool isBusy;
 
     protected float horizontalInput;
     protected float verticalInput;
+    protected int horizontalFacing;
 
     protected int jumpCount;
 
@@ -26,6 +30,7 @@ public class PlayerLogic : MonoBehaviour
     protected const float GRAVITY = 30f;
     protected const float JUMP_SPEED = 12f;
     protected const int MAX_JUMP_COUNT = 2;
+    protected const float TURN_TIME = 0.2f;
 
     private void Start()
     {
@@ -33,6 +38,7 @@ public class PlayerLogic : MonoBehaviour
         animator = GetComponent<Animator>();
 
         isMovable = true;
+        horizontalFacing = 1;
         jumpCount = MAX_JUMP_COUNT;
     }
 
@@ -58,7 +64,15 @@ public class PlayerLogic : MonoBehaviour
     private void FixedUpdate()
     {
         if (isMovable)
+        {
             velocity.x = horizontalInput * SPEED;
+            if (horizontalFacing * horizontalInput < 0 && !isBusy)
+            {
+                horizontalFacing *= -1;
+                animator.SetTrigger("Turn");
+                StartCoroutine(TurnCoroutine());
+            }
+        }
         else velocity.x = 0;
 
         movement = velocity * Time.fixedDeltaTime;
@@ -74,5 +88,24 @@ public class PlayerLogic : MonoBehaviour
     public void SetMovable(bool value)
     {
         isMovable = value;
+    }
+
+    public void SetBusy(bool value)
+    {
+        isBusy = value;
+    }
+
+    public IEnumerator TurnCoroutine()
+    {
+        float timer = TURN_TIME;
+        Vector3 rotation = new(0, 180, 0);
+        var targetRotation = quaternion.Euler(rotation * Mathf.Deg2Rad) * transform.rotation;
+        while (timer > 0)
+        {
+            transform.Rotate(rotation * Time.deltaTime / TURN_TIME);
+            timer -= Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        transform.rotation = targetRotation;
     }
 }
