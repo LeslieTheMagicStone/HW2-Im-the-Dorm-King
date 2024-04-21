@@ -74,6 +74,3 @@ crashlytics-build.properties
 # Test stuff
 /[Aa]ssets/_Dev.meta
 /[Aa]ssets/_Dev/
-
-# Particle Pack
-/[Aa]ssets/UnityTechnologies/
