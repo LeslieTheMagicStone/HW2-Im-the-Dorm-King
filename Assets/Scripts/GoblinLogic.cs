@@ -5,6 +5,9 @@ public class GoblinLogic : PlayerLogic
     [SerializeField] private FireballLogic fireballPrefab;
     [SerializeField] private Transform fireballSpawnPoint;
 
+    [SerializeField] private EarthShatterLogic earthShatterPrefab;
+    [SerializeField] private Transform earthShatterSpawnPoint;
+
     protected override void Update()
     {
         base.Update();
@@ -15,7 +18,12 @@ public class GoblinLogic : PlayerLogic
 
     private void HandleAttack()
     {
-        if (Input.GetButtonDown("Fire1" + playerId.ToString()) && !isBusy)
+        if (Input.GetButtonDown("Fire1" + playerId.ToString()) && verticalInput == -1 && characterController.isGrounded && !isBusy)
+        {
+            animator.SetTrigger("EarthShatter");
+        }
+
+        if (Input.GetButtonDown("Fire1" + playerId.ToString()) && verticalInput == 0 && !isBusy)
         {
             animator.SetTrigger("Fireball");
         }
@@ -25,6 +33,12 @@ public class GoblinLogic : PlayerLogic
     {
         var fireball = Instantiate(fireballPrefab, fireballSpawnPoint.position, fireballSpawnPoint.rotation);
         fireball.playerId = playerId;
+    }
+
+    public void EarthShatter()
+    {
+        var earthShatter = Instantiate(earthShatterPrefab, earthShatterSpawnPoint.position, earthShatterSpawnPoint.rotation);
+        earthShatter.playerId = playerId;
     }
 
 }

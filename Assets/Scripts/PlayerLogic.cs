@@ -71,7 +71,7 @@ public class PlayerLogic : MonoBehaviour
     {
         // Handle movement.
         horizontalInput = Input.GetAxis("Horizontal" + playerId.ToString());
-        verticalInput = Input.GetAxis("Vertical" + playerId.ToString());
+        verticalInput = Input.GetAxisRaw("Vertical" + playerId.ToString());
 
         animator.SetFloat("HorizontalInput", horizontalInput);
 
