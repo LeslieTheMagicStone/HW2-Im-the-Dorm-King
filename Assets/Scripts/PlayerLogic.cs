@@ -22,6 +22,7 @@ public class PlayerLogic : MonoBehaviour
 
     protected float horizontalInput;
     protected float verticalInput;
+    protected float verticalInputRaw;
     protected int horizontalFacing;
     protected float totalDamge;
     protected float uncontrollableTime;
@@ -71,9 +72,11 @@ public class PlayerLogic : MonoBehaviour
     {
         // Handle movement.
         horizontalInput = Input.GetAxis("Horizontal" + playerId.ToString());
-        verticalInput = Input.GetAxisRaw("Vertical" + playerId.ToString());
+        verticalInput = Input.GetAxis("Vertical" + playerId.ToString());
+        verticalInputRaw = Input.GetAxisRaw("Vertical" + playerId.ToString());
 
         animator.SetFloat("HorizontalInput", horizontalInput);
+        animator.SetFloat("VerticalInput", verticalInput);
 
         if (characterController.isGrounded) jumpCount = MAX_JUMP_COUNT;
         animator.SetBool("IsGrounded", characterController.isGrounded);

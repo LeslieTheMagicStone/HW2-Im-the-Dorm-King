@@ -18,12 +18,12 @@ public class GoblinLogic : PlayerLogic
 
     private void HandleAttack()
     {
-        if (Input.GetButtonDown("Fire1" + playerId.ToString()) && verticalInput == -1 && characterController.isGrounded && !isBusy)
+        if (Input.GetButtonDown("Fire1" + playerId.ToString()) && verticalInputRaw == -1 && characterController.isGrounded && !isBusy)
         {
             animator.SetTrigger("EarthShatter");
         }
 
-        if (Input.GetButtonDown("Fire1" + playerId.ToString()) && verticalInput == 0 && !isBusy)
+        if (Input.GetButtonDown("Fire1" + playerId.ToString()) && verticalInputRaw == 0 && !isBusy)
         {
             animator.SetTrigger("Fireball");
         }
