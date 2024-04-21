@@ -128,6 +128,7 @@ public class PlayerLogic : MonoBehaviour
         TakeDamage(damage);
         SetUncontrollable(stiffTime);
         TakeKnockback(knockback);
+        AudioManager.Instance.Play("Hurt");
     }
 
     private void TakeDamage(float damage)
