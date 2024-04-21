@@ -14,8 +14,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private PlayerLogic playerPrefab;
     [SerializeField] private DamageTextLogic damageTextPrefab;
+    [SerializeField] private Transform damageTextParent;
     [SerializeField] private Transform[] spawnPoints;
-    [SerializeField] private Transform[] damageTextPlaces;
     [SerializeField] private Transform respawnPlatformPrefab;
     [SerializeField] private Transform[] respawnPoints;
     [SerializeField] private GameObject respawnParticles;
@@ -35,14 +35,7 @@ public class GameManager : MonoBehaviour
         damageTexts = new DamageTextLogic[PLAYER_COUNT];
         for (int i = 0; i < PLAYER_COUNT; i++)
         {
-            PlayerLogic player = SpawnPlayer(i, spawnPoints[i]);
-
-            // Init UIs.
-            var damageText = Instantiate(damageTextPrefab, damageTextPlaces[i]);
-            damageText.transform.localPosition = Vector3.zero;
-            damageText.name = "Damage Text " + player.playerId.ToString();
-            damageText.SetMaster(player);
-            damageTexts[i] = damageText;
+            SpawnPlayer(i, spawnPoints[i]);
         }
     }
 
@@ -53,8 +46,6 @@ public class GameManager : MonoBehaviour
         Instantiate(respawnParticles, respawnPoints[i].position, respawnPoints[i].rotation);
         Vector3 platformPos = respawnPoints[i].position - player.GetComponent<CharacterController>().center.y * Vector3.up;
         Instantiate(respawnPlatformPrefab, platformPos, respawnPoints[i].rotation);
-
-        damageTexts[i].SetMaster(player);
     }
 
     PlayerLogic SpawnPlayer(int i, Transform spawnPoint)
@@ -64,6 +55,11 @@ public class GameManager : MonoBehaviour
         player.name = playerPrefab.name + player.playerId.ToString();
         player.OnDeath.AddListener(Respawn);
         players[i] = player;
+
+        var damageText = Instantiate(damageTextPrefab, damageTextParent);
+        damageText.name = "Damage Text " + player.playerId.ToString();
+        damageText.SetMaster(player);
+        damageTexts[i] = damageText;
         return player;
     }
 }
