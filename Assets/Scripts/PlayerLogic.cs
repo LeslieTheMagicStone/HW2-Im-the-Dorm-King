@@ -15,7 +15,10 @@ public class PlayerLogic : MonoBehaviour
     public bool isControllable => uncontrollableTime <= 0f;
     public PlayerId playerId;
     public UnityEvent<float> OnDamaged;
+    public UnityEvent<PlayerId> OnDeath;
     public Texture portrait;
+
+    [SerializeField] protected GameObject deathParticlePrefab;
 
     protected float horizontalInput;
     protected float verticalInput;
@@ -48,6 +51,8 @@ public class PlayerLogic : MonoBehaviour
 
     protected virtual void Update()
     {
+        CheckDeath();
+
         ResetAnimatorTriggers();
 
         if (uncontrollableTime > 0)
@@ -140,6 +145,26 @@ public class PlayerLogic : MonoBehaviour
     {
         float knockbackFactor = 1 + totalDamge / 100f;
         velocity = knockbackFactor * knockback;
+    }
+
+    private void CheckDeath()
+    {
+        Transform bound = GameManager.Instance.boxBound;
+        if (transform.position.x < bound.position.x - bound.localScale.x / 2
+        || transform.position.x > bound.position.x + bound.localScale.x / 2
+        || transform.position.y > bound.position.y + bound.localScale.y / 2
+        || transform.position.y < bound.position.y - bound.localScale.y / 2)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        if (deathParticlePrefab != null)
+            Instantiate(deathParticlePrefab, transform.position, transform.rotation);
+        OnDeath.Invoke(playerId);
+        Destroy(gameObject);
     }
 
     public void SetMovable(bool value)

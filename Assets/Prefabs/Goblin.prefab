@@ -999,10 +999,15 @@ MonoBehaviour:
   isMovable: 0
   isBusy: 0
   playerId: 0
-  OnHurt:
+  OnDamaged:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeath:
     m_PersistentCalls:
       m_Calls: []
   portrait: {fileID: 2800000, guid: 75cd814ad87213244bdfe5fa0d271e55, type: 3}
+  deathParticlePrefab: {fileID: 2756828295357697920, guid: bfdcff5b9c6132e4fa3cb5716d52d71a,
+    type: 3}
   fireballPrefab: {fileID: 3986516003655416112, guid: 1f8000e50e14f4d45ae1c2d651d7b56c,
     type: 3}
   fireballSpawnPoint: {fileID: 2078018830703852481}
