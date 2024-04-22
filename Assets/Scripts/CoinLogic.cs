@@ -56,11 +56,7 @@ public class CoinLogic : MonoBehaviour
 
     public void Load(int index)
     {
-        print(index);
-        print(coinState);
         SetCoinState((CoinState)PlayerPrefs.GetInt("CoinState" + index, 1));
-        print(coinState);
-
     }
 
     void CollectCoin()
