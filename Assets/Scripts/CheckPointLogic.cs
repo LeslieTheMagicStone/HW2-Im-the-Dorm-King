@@ -12,9 +12,9 @@ public class CheckPointLogic : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.TryGetComponent(out PlayerLogic playerLogic))
         {
-            GameManager.Instance.SaveGame();
+            playerLogic.SaveProgress();
             transform.DOJump(transform.position, 1, 1, 0.5f);
             audioSource.Play();
         }

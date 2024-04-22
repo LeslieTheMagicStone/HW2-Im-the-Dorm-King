@@ -6,6 +6,7 @@ public enum PlayerId
 {
     _P1,
     _P2,
+    _Neutral,
 }
 
 public class PlayerLogic : MonoBehaviour
@@ -125,14 +126,14 @@ public class PlayerLogic : MonoBehaviour
         }
     }
 
-    public void Save()
+    public void SaveProgress()
     {
-        PlayerPrefs.SetFloat("PlayerPosX" + playerId.ToString(), transform.position.x);
-        PlayerPrefs.SetFloat("PlayerPosY" + playerId.ToString(), transform.position.y);
-        PlayerPrefs.SetFloat("PlayerPosZ" + playerId.ToString(), transform.position.z);
-        PlayerPrefs.SetFloat("PlayerRotX" + playerId.ToString(), transform.rotation.eulerAngles.x);
-        PlayerPrefs.SetFloat("PlayerRotY" + playerId.ToString(), transform.rotation.eulerAngles.y);
-        PlayerPrefs.SetFloat("PlayerRotZ" + playerId.ToString(), transform.rotation.eulerAngles.z);
+        PlayerPrefs.SetFloat("CKPT_PlayerPosX" + playerId.ToString(), transform.position.x);
+        PlayerPrefs.SetFloat("CKPT_PlayerPosY" + playerId.ToString(), transform.position.y);
+        PlayerPrefs.SetFloat("CKPT_PlayerPosZ" + playerId.ToString(), transform.position.z);
+        PlayerPrefs.SetFloat("CKPT_PlayerRotX" + playerId.ToString(), transform.rotation.eulerAngles.x);
+        PlayerPrefs.SetFloat("CKPT_PlayerRotY" + playerId.ToString(), transform.rotation.eulerAngles.y);
+        PlayerPrefs.SetFloat("CKPT_PlayerRotZ" + playerId.ToString(), transform.rotation.eulerAngles.z);
     }
 
     private void ResetAnimatorTriggers()

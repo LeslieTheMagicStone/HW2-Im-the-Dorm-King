@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections;
 
 public enum CoinState
 {
@@ -34,7 +35,7 @@ public class CoinLogic : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            CollectCoin();
+            StartCoroutine(CollectCoinCoroutine());
             audioSource.Play();
         }
     }
@@ -59,14 +60,14 @@ public class CoinLogic : MonoBehaviour
         SetCoinState((CoinState)PlayerPrefs.GetInt("CoinState" + index, 1));
     }
 
-    void CollectCoin()
+    IEnumerator CollectCoinCoroutine()
     {
-        Sequence sequence = DOTween.Sequence();
         collider.enabled = false;
         transform.DOMoveY(4, COLLECTED_ANIMATION_TIME).SetRelative(true).SetEase(Ease.InBack);
         transform.DORotate(new(0, 0, COLLECTED_ROTATION_SPEED * COLLECTED_ANIMATION_TIME), COLLECTED_ANIMATION_TIME, RotateMode.LocalAxisAdd);
-        sequence.AppendInterval(COLLECTED_ANIMATION_TIME);
-        sequence.AppendCallback(() => SetCoinState(CoinState.Inactive));
+        yield return new WaitForSeconds(COLLECTED_ANIMATION_TIME);
+
+        SetCoinState(CoinState.Inactive);
     }
 
     void SetCoinState(CoinState coinState)

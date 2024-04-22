@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -68,15 +69,20 @@ public class GameManager : MonoBehaviour
         SaveGame();
     }
 
-    private async void Respawn(PlayerId id)
+    private void Respawn(PlayerId id, Vector3 position, Quaternion rotation)
     {
-        await Task.Delay((int)(RESPAWN_INTERVAL * 1000));
+        StartCoroutine(RespawnCoroutine(id, position, rotation));
+    }
+
+    private IEnumerator RespawnCoroutine(PlayerId id, Vector3 position, Quaternion rotation)
+    {
+        yield return new WaitForSeconds(RESPAWN_INTERVAL);
 
         int i = (int)id;
-        PlayerLogic player = SpawnPlayer(i, respawnPoints[i]);
-        Instantiate(respawnParticles, respawnPoints[i].position, respawnPoints[i].rotation);
-        Vector3 platformPos = respawnPoints[i].position - player.GetComponent<CharacterController>().center.y * Vector3.up;
-        Instantiate(respawnPlatformPrefab, platformPos, respawnPoints[i].rotation);
+        PlayerLogic player = SpawnPlayer(i, position, rotation);
+        Instantiate(respawnParticles, position, rotation);
+        Vector3 platformPos = position - player.GetComponent<CharacterController>().center.y * Vector3.up;
+        Instantiate(respawnPlatformPrefab, platformPos, rotation);
     }
 
     private PlayerLogic SpawnPlayer(int i, Transform spawnPoint)
@@ -89,13 +95,17 @@ public class GameManager : MonoBehaviour
         var player = Instantiate(playerPrefab, position, rotation);
         player.playerId = (PlayerId)i;
         player.name = playerPrefab.name + player.playerId.ToString();
-        player.OnDeath.AddListener(Respawn);
+        player.OnDeath.AddListener(LoadPlayerCKPT);
         players[i] = player;
 
-        var damageText = Instantiate(damageTextPrefab, damageTextParent);
-        damageText.name = "Damage Text " + player.playerId.ToString();
-        damageText.SetMaster(player);
-        damageTexts[i] = damageText;
+        if (damageTextPrefab)
+        {
+            var damageText = Instantiate(damageTextPrefab, damageTextParent);
+            damageText.name = "Damage Text " + player.playerId.ToString();
+            damageText.SetMaster(player);
+            damageTexts[i] = damageText;
+        }
+
         return player;
     }
 
@@ -120,6 +130,12 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetFloat("PlayerRotX" + id.ToString(), spawnPoints[i].transform.rotation.eulerAngles.x);
         PlayerPrefs.SetFloat("PlayerRotY" + id.ToString(), spawnPoints[i].transform.rotation.eulerAngles.y);
         PlayerPrefs.SetFloat("PlayerRotZ" + id.ToString(), spawnPoints[i].transform.rotation.eulerAngles.z);
+        PlayerPrefs.SetFloat("CKPT_PlayerPosX" + id.ToString(), spawnPoints[i].transform.position.x);
+        PlayerPrefs.SetFloat("CKPT_PlayerPosY" + id.ToString(), spawnPoints[i].transform.position.y);
+        PlayerPrefs.SetFloat("CKPT_PlayerPosZ" + id.ToString(), spawnPoints[i].transform.position.z);
+        PlayerPrefs.SetFloat("CKPT_PlayerRotX" + id.ToString(), spawnPoints[i].transform.rotation.eulerAngles.x);
+        PlayerPrefs.SetFloat("CKPT_PlayerRotY" + id.ToString(), spawnPoints[i].transform.rotation.eulerAngles.y);
+        PlayerPrefs.SetFloat("CKPT_PlayerRotZ" + id.ToString(), spawnPoints[i].transform.rotation.eulerAngles.z);
         PlayerPrefs.Save();
     }
 
@@ -137,6 +153,22 @@ public class GameManager : MonoBehaviour
         var rotation = Quaternion.Euler(playerRotX, playerRotY, playerRotZ);
 
         SpawnPlayer((int)id, position, rotation);
+    }
+
+    private void LoadPlayerCKPT(PlayerId id)
+    {
+        float playerPosX = PlayerPrefs.GetFloat("CKPT_PlayerPosX" + id.ToString());
+        float playerPosY = PlayerPrefs.GetFloat("CKPT_PlayerPosY" + id.ToString());
+        float playerPosZ = PlayerPrefs.GetFloat("CKPT_PlayerPosZ" + id.ToString());
+
+        float playerRotX = PlayerPrefs.GetFloat("CKPT_PlayerRotX" + id.ToString());
+        float playerRotY = PlayerPrefs.GetFloat("CKPT_PlayerRotY" + id.ToString());
+        float playerRotZ = PlayerPrefs.GetFloat("CKPT_PlayerRotZ" + id.ToString());
+
+        var position = new Vector3(playerPosX, playerPosY, playerPosZ);
+        var rotation = Quaternion.Euler(playerRotX, playerRotY, playerRotZ);
+
+        Respawn(id, position + new Vector3(0, 5f, 0), rotation);
     }
 
     public void ResetGame()
