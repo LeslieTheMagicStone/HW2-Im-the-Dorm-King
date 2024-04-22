@@ -12,7 +12,7 @@ public class FireballLogic : Damage
 
     private void Start()
     {
-        damage = 10.0f;
+        damage = 15.0f;
         stiffTime = 0.3f;
         knockbackValue = 5f;
 

@@ -6,9 +6,9 @@ public class FlameLogic : Damage
 
     private void Start()
     {
-        damage = 10f;
+        damage = 5f;
         stiffTime = 0.1f;
-        knockbackValue = 10f;
+        knockbackValue = 8f;
         playerId = PlayerId._Neutral;
     }
 }

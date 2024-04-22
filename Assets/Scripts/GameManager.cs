@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,6 +17,7 @@ public class GameManager : MonoBehaviour
     private CoinLogic[] coinLogics;
     private Vector3[] playerLastGroundedPositions;
     private Vector3[] playerLastGroundedRotations;
+    private int[] coinCounts;
 
     [SerializeField] private PlayerLogic playerPrefab;
     [SerializeField] private DamageTextLogic damageTextPrefab;
@@ -24,6 +26,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform respawnPlatformPrefab;
     [SerializeField] private Transform[] respawnPoints;
     [SerializeField] private GameObject respawnParticles;
+    [SerializeField] private TMP_Text[] coinCountTexts;
 
     private const int PLAYER_COUNT = 2;
     private const float RESPAWN_INTERVAL = 1f;
@@ -41,6 +44,7 @@ public class GameManager : MonoBehaviour
         damageTexts = new DamageTextLogic[PLAYER_COUNT];
         playerLastGroundedPositions = new Vector3[PLAYER_COUNT];
         playerLastGroundedRotations = new Vector3[PLAYER_COUNT];
+        coinCounts = new int[PLAYER_COUNT];
         coinLogics = FindObjectsOfType<CoinLogic>();
 
         LoadGame();
@@ -171,12 +175,21 @@ public class GameManager : MonoBehaviour
         Respawn(id, position + new Vector3(0, 5f, 0), rotation);
     }
 
+    public void AddCoin(PlayerId id)
+    {
+        int i = (int)id;
+        coinCounts[i]++;
+        coinCountTexts[i].text = "X " + coinCounts[i].ToString();
+    }
+
     public void ResetGame()
     {
         for (int i = 0; i < coinLogics.Length; i++)
             coinLogics[i].ResetSave(i);
         for (int i = 0; i < players.Length; i++)
             ResetPlayer((PlayerId)i);
+        for (int i = 0; i < players.Length; i++)
+            PlayerPrefs.SetInt("CoinCount" + ((PlayerId)i).ToString(), 0);
         PlayerPrefs.Save();
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -188,6 +201,8 @@ public class GameManager : MonoBehaviour
             coinLogics[i].Save(i);
         for (int i = 0; i < players.Length; i++)
             SavePlayer((PlayerId)i);
+        for (int i = 0; i < players.Length; i++)
+            PlayerPrefs.SetInt("CoinCount" + ((PlayerId)i).ToString(), coinCounts[i]);
         PlayerPrefs.Save();
     }
 
@@ -197,5 +212,7 @@ public class GameManager : MonoBehaviour
             coinLogics[i].Load(i);
         for (int i = 0; i < players.Length; i++)
             LoadPlayer((PlayerId)i);
+        for (int i = 0; i < players.Length; i++)
+            coinCounts[i] = PlayerPrefs.GetInt("CoinCount" + ((PlayerId)i).ToString(), 0);
     }
 }

@@ -33,10 +33,11 @@ public class CoinLogic : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.TryGetComponent(out PlayerLogic playerLogic))
         {
             StartCoroutine(CollectCoinCoroutine());
             audioSource.Play();
+            GameManager.Instance.AddCoin(playerLogic.playerId);
         }
     }
 
