@@ -36,5 +36,8 @@ public class DamageTextLogic : MonoBehaviour
         tmpText.DOFade(1, 0.01f).OnComplete(() => tmpText.DOFade(1, 1f).OnComplete(() => tmpText.DOFade(0, 1)));
     }
 
-
+    private void OnDestroy()
+    {
+        DOTween.KillAll();
+    }
 }

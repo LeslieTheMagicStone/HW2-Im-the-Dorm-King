@@ -17,6 +17,8 @@ public class PlayerLogic : MonoBehaviour
     public UnityEvent<float> OnDamaged;
     public UnityEvent<PlayerId> OnDeath;
     public Texture portrait;
+    public Vector3 lastGroundedPosition;
+    public Vector3 lastGroundedRotation;
 
     [SerializeField] protected GameObject deathParticlePrefab;
 
@@ -43,9 +45,8 @@ public class PlayerLogic : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
-
         SetMovable(true);
-        horizontalFacing = transform.rotation.eulerAngles.y == 90 ? 1 : -1;
+        horizontalFacing = Mathf.Abs(transform.rotation.eulerAngles.y - 90) < 1f ? 1 : -1;
         uncontrollableTime = 0f;
         jumpCount = MAX_JUMP_COUNT;
     }
@@ -107,6 +108,12 @@ public class PlayerLogic : MonoBehaviour
             velocity.y -= GRAVITY * Time.fixedDeltaTime;
         else
             velocity.y = -GRAVITY * Time.fixedDeltaTime;
+
+        if (characterController.isGrounded)
+        {
+            lastGroundedPosition = transform.position;
+            lastGroundedRotation = transform.rotation.eulerAngles;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -116,6 +123,16 @@ public class PlayerLogic : MonoBehaviour
             if (damage.playerId != playerId)
                 GetHurt(damage.damage, damage.stiffTime, damage.knockback);
         }
+    }
+
+    public void Save()
+    {
+        PlayerPrefs.SetFloat("PlayerPosX" + playerId.ToString(), transform.position.x);
+        PlayerPrefs.SetFloat("PlayerPosY" + playerId.ToString(), transform.position.y);
+        PlayerPrefs.SetFloat("PlayerPosZ" + playerId.ToString(), transform.position.z);
+        PlayerPrefs.SetFloat("PlayerRotX" + playerId.ToString(), transform.rotation.eulerAngles.x);
+        PlayerPrefs.SetFloat("PlayerRotY" + playerId.ToString(), transform.rotation.eulerAngles.y);
+        PlayerPrefs.SetFloat("PlayerRotZ" + playerId.ToString(), transform.rotation.eulerAngles.z);
     }
 
     private void ResetAnimatorTriggers()
