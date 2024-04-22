@@ -87,6 +87,7 @@ public class PlayerLogic : MonoBehaviour
         {
             jumpCount--;
             velocity.y = JUMP_SPEED;
+            if (!isMovable) isMovable = true;
             animator.SetTrigger("Jump");
         }
 

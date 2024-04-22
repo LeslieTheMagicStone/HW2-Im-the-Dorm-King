@@ -31,6 +31,7 @@ public class DamageTextLogic : MonoBehaviour
 
     private void UpdateText(float totalDamage)
     {
+        if (tmpText == null) return;
         tmpText.text = totalDamage.ToString("F1") + "%";
         tmpText.transform.DOShakePosition(0.5f, 0.7f, 1000).SetEase(Ease.Linear);
         tmpText.DOFade(1, 0.01f).OnComplete(() => tmpText.DOFade(1, 1f).OnComplete(() => tmpText.DOFade(0, 1)));
