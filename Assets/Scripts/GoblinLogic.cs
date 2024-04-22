@@ -11,7 +11,7 @@ public class GoblinLogic : PlayerLogic
     protected override void Update()
     {
         base.Update();
-        if (!isControllable || isBusy) return;
+        if (!isControllable || isBusy || GameManager.Instance.gameState == GameState.GameEnd) return;
         HandleMovement();
         HandleAttack();
     }

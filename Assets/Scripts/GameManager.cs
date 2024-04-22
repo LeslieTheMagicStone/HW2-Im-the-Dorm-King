@@ -1,23 +1,32 @@
 using System.Collections;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+
+public enum GameState
+{
+    Normal,
+    GameEnd
+}
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance => instance;
     public PlayerLogic[] Players => players;
     public Transform boxBound;
+    public GameState gameState = GameState.Normal;
+    public UnityEvent<int> OnGameEnd;
 
 
     private static GameManager instance;
     private PlayerLogic[] players;
     private DamageTextLogic[] damageTexts;
     private CoinLogic[] coinLogics;
-    private Vector3[] playerLastGroundedPositions;
+    public Vector3[] playerLastGroundedPositions;
     private Vector3[] playerLastGroundedRotations;
     private int[] coinCounts;
+    private float startTime;
 
     [SerializeField] private PlayerLogic playerPrefab;
     [SerializeField] private DamageTextLogic damageTextPrefab;
@@ -27,9 +36,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform[] respawnPoints;
     [SerializeField] private GameObject respawnParticles;
     [SerializeField] private TMP_Text[] coinCountTexts;
+    [SerializeField] private TMP_Text timerText;
 
     private const int PLAYER_COUNT = 2;
     private const float RESPAWN_INTERVAL = 1f;
+    private const float MAX_TIME_SECONDS = 120f;
 
     private void Awake()
     {
@@ -46,16 +57,39 @@ public class GameManager : MonoBehaviour
         playerLastGroundedRotations = new Vector3[PLAYER_COUNT];
         coinCounts = new int[PLAYER_COUNT];
         coinLogics = FindObjectsOfType<CoinLogic>();
+        startTime = Time.time;
 
         LoadGame();
     }
 
     private void Update()
     {
+        if (gameState == GameState.GameEnd)
+        {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetGame();
         }
+        float currentTime = Time.time - startTime;
+        float timerTime = MAX_TIME_SECONDS - currentTime;
+        int timerSeconds = (int)timerTime;
+        if (timerTime < 0f)
+        {
+            timerTime = 0f;
+            // TODO: More player logics.
+            int winnerID = coinCounts[0] > coinCounts[1] ? 0 : (coinCounts[0] == coinCounts[1] ? -1 : 1);
+            PlayerPrefs.SetInt("Winner", winnerID);
+            gameState = GameState.GameEnd;
+            OnGameEnd.Invoke(winnerID);
+
+
+            ResetGame(true);
+        }
+        timerText.text = timerSeconds.ToString() + ":" + ((int)((timerTime - timerSeconds) * 60f)).ToString("D2");
+
     }
 
     private void FixedUpdate()
@@ -182,7 +216,12 @@ public class GameManager : MonoBehaviour
         coinCountTexts[i].text = "X " + coinCounts[i].ToString();
     }
 
-    public void ResetGame()
+    public void ResetGame(bool outro = false)
+    {
+        StartCoroutine(ResetGameCoroutine(outro));
+    }
+
+    private IEnumerator ResetGameCoroutine(bool outro)
     {
         for (int i = 0; i < coinLogics.Length; i++)
             coinLogics[i].ResetSave(i);
@@ -192,7 +231,26 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt("CoinCount" + ((PlayerId)i).ToString(), 0);
         PlayerPrefs.Save();
 
+        if (outro)
+        {
+            yield return VignetteLogic.Instance.Outro();
+            yield return new WaitForSeconds(1);
+        }
+
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void ResetGameWithOutro()
+    {
+        for (int i = 0; i < coinLogics.Length; i++)
+            coinLogics[i].ResetSave(i);
+        for (int i = 0; i < players.Length; i++)
+            ResetPlayer((PlayerId)i);
+        for (int i = 0; i < players.Length; i++)
+            PlayerPrefs.SetInt("CoinCount" + ((PlayerId)i).ToString(), 0);
+        PlayerPrefs.Save();
+
+        StartCoroutine(VignetteLogic.Instance.Outro());
     }
 
     public void SaveGame()

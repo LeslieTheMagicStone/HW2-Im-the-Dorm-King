@@ -50,6 +50,8 @@ public class PlayerLogic : MonoBehaviour
         horizontalFacing = Mathf.Abs(transform.rotation.eulerAngles.y - 90) < 1f ? 1 : -1;
         uncontrollableTime = 0f;
         jumpCount = MAX_JUMP_COUNT;
+        GameManager.Instance.OnGameEnd.AddListener((id) => animator.SetTrigger(id == (int)playerId ? "Victory" : "Clap"));
+        GameManager.Instance.OnGameEnd.AddListener((id) => SetMovable(false));
     }
 
     protected virtual void Update()
