@@ -45,6 +45,14 @@ public class GameManager : MonoBehaviour
         LoadGame();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ResetGame();
+        }
+    }
+
     private void FixedUpdate()
     {
         for (int i = 0; i < players.Length; i++)

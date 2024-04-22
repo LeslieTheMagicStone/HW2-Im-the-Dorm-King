@@ -34,9 +34,14 @@ public class CoinLogic : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            SetCoinState(CoinState.Inactive);
+            CollectCoin();
             audioSource.Play();
         }
+    }
+
+    private void OnDestroy()
+    {
+        DOTween.KillAll();
     }
 
     public void Save(int index)
@@ -51,7 +56,21 @@ public class CoinLogic : MonoBehaviour
 
     public void Load(int index)
     {
+        print(index);
+        print(coinState);
         SetCoinState((CoinState)PlayerPrefs.GetInt("CoinState" + index, 1));
+        print(coinState);
+
+    }
+
+    void CollectCoin()
+    {
+        Sequence sequence = DOTween.Sequence();
+        collider.enabled = false;
+        transform.DOMoveY(4, COLLECTED_ANIMATION_TIME).SetRelative(true).SetEase(Ease.InBack);
+        transform.DORotate(new(0, 0, COLLECTED_ROTATION_SPEED * COLLECTED_ANIMATION_TIME), COLLECTED_ANIMATION_TIME, RotateMode.LocalAxisAdd);
+        sequence.AppendInterval(COLLECTED_ANIMATION_TIME);
+        sequence.AppendCallback(() => SetCoinState(CoinState.Inactive));
     }
 
     void SetCoinState(CoinState coinState)
@@ -65,12 +84,8 @@ public class CoinLogic : MonoBehaviour
         }
         else
         {
-            Sequence sequence = DOTween.Sequence();
-            transform.DOMoveY(4, COLLECTED_ANIMATION_TIME).SetRelative(true).SetEase(Ease.InBack);
-            transform.DORotate(new(0, 0, COLLECTED_ROTATION_SPEED * COLLECTED_ANIMATION_TIME), COLLECTED_ANIMATION_TIME, RotateMode.LocalAxisAdd);
-            sequence.AppendInterval(COLLECTED_ANIMATION_TIME);
-            sequence.AppendCallback(() => meshRenderer.enabled = false);
-            sequence.AppendCallback(() => collider.enabled = false);
+            meshRenderer.enabled = false;
+            collider.enabled = false;
         }
     }
 
