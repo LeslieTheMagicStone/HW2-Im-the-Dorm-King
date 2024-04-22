@@ -25,5 +25,15 @@ public class CameraLogic : MonoBehaviour
         }
         Vector3 targetCamPos = target + offset;
         transform.position = Vector3.Lerp(transform.position, targetCamPos, SMOOTHING * Time.fixedDeltaTime);
+
+        float targetFieldOfView = 60f;
+        List<PlayerLogic> t = targets.ToList();
+        if (targets.Count() == 2)
+        {
+            float deltaX = Mathf.Abs(t[0].transform.position.x - t[1].transform.position.x);
+            targetFieldOfView = Mathf.Max(60f, deltaX * 5f);
+            targetFieldOfView = Mathf.Min(targetFieldOfView, 100);
+        }
+        Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, targetFieldOfView, SMOOTHING * Time.fixedDeltaTime);
     }
 }
